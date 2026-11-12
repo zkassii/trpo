@@ -1,0 +1,22 @@
+public async Task<IActionResult> OnPostAsync()
+{
+    if (!ModelState.IsValid) return Page();
+
+    Animal? a = null;
+    if (Input.AnimalId != 0)
+        a = await _db.Animals.FirstOrDefaultAsync(x => x.AnimalId == Input.AnimalId);
+
+    if (a == null)
+    {
+        a = new Animal();
+        _db.Animals.Add(a);
+    }
+
+    a.Name = Input.Name.Trim();
+    a.Species = Input.Species.Trim();
+    a.Status = Input.Status;
+    AnimalRules.Apply(a);
+
+    await _db.SaveChangesAsync();
+    return RedirectToPage("/Staff/Animals/Index");
+}
